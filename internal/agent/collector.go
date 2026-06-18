@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -41,11 +42,35 @@ func skipNetPrefix(name string) bool {
 
 var parentRe = regexp.MustCompile(`\d+$`)
 
+// hostRoot returns the prefix under which the real host's filesystem is
+// readable, or "" when the agent reads its own namespace directly. In sandboxes
+// that share the host PID namespace but not its mounts — Home Assistant add-ons
+// with host_pid — the host root is reachable at /proc/1/root (set via
+// AGENT_HOST_ROOT), so host identity can be read without bind mounts.
+func hostRoot() string {
+	return os.Getenv("AGENT_HOST_ROOT")
+}
+
+// collectHostname reports the host's name. os.Hostname() returns the UTS
+// namespace name, which in a container is the container's — so when a host root
+// is configured, read the host's /etc/hostname instead.
+func collectHostname() string {
+	if root := hostRoot(); root != "" {
+		if data, err := os.ReadFile(filepath.Join(root, "etc", "hostname")); err == nil {
+			if name := strings.TrimSpace(string(data)); name != "" {
+				return name
+			}
+		}
+	}
+	name, _ := os.Hostname()
+	return name
+}
+
 func CollectStats(dockerClient *client.Client) (*shared.ReportRequest, error) {
 	// The agent does not declare its own ID or name — the monitor derives both
 	// from the token the report is authenticated with. Only the hostname is
 	// reported, as informational host detail.
-	hostname, _ := os.Hostname()
+	hostname := collectHostname()
 
 	type cpuData struct {
 		percent []float64
@@ -328,7 +353,13 @@ func collectDocker(dockerClient *client.Client) shared.DockerInfo {
 func collectSystemInfo() shared.SystemInfo {
 	info := shared.SystemInfo{}
 
-	for _, path := range []string{"/host/etc/os-release", "/etc/os-release"} {
+	osReleasePaths := []string{"/host/etc/os-release", "/etc/os-release"}
+	if root := hostRoot(); root != "" {
+		// Prefer the real host's os-release over the container's base image.
+		osReleasePaths = append([]string{filepath.Join(root, "etc", "os-release")}, osReleasePaths...)
+	}
+
+	for _, path := range osReleasePaths {
 		data, err := os.ReadFile(path)
 		if err != nil {
 			continue

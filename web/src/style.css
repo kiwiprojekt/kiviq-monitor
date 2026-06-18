@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Code", "Cascadia Mono", Menlo, Consolas, monospace;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Code", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  --color-kiwi-sage: #b6e09a;
+  --color-kiwi-lime: #c8e877;
+  --color-kiwi-flesh: #a8d07a;
+
+  --color-canvas: #fdfcfc;
+  --color-surface-soft: #f8f7f7;
+  --color-surface-card: #f1eeee;
+  --color-ink: #201d1d;
+  --color-ink-deep: #0f0000;
+  --color-charcoal: #302c2c;
+  --color-body: #424245;
+  --color-mute: #646262;
+  --color-stone: #6e6e73;
+  --color-ash: #9a9898;
+  --color-hairline: rgba(15,0,0,0.12);
+  --color-hairline-strong: #646262;
+  --color-on-dark: #fdfcfc;
+  --color-on-dark-mute: #9a9898;
+  --color-surface-dark: #201d1d;
+  --color-surface-dark-elevated: #302c2c;
+
+  --color-accent: #007aff;
+  --color-accent-hover: #0056b3;
+  --color-success: #30d158;
+  --color-warning: #ff9f0a;
+  --color-danger: #ff3b30;
+}
+
+@layer base {
+  * {
+    @apply border-hairline;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ink;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

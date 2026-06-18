@@ -1,0 +1,26 @@
+# Compiled binaries
+/monitor
+/agent
+/kiviq-monitor
+/kiviq-agent
+/bin/
+
+# Frontend deps & build output
+web/node_modules/
+web/dist/
+
+# Runtime state / local config (contains secrets)
+/config.json
+/data/
+
+# Tooling
+.mimocode/
+
+# OS / editor
+.DS_Store
+*.log
+
+# Go vendor dir (deps resolved from go.mod/go.sum at build time)
+vendor/
+
+node_modules/

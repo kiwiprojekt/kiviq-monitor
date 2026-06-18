@@ -3,6 +3,20 @@
 A lightweight, self-hosted server monitoring system. A central **monitor** collects
 metrics from one or more **agents** and serves a live **Vue dashboard** over HTTPS.
 
+## Screenshots
+
+Every monitored host at a glance:
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+Per-host detail — system info, CPU, memory and disks:
+
+![Host detail](docs/screenshots/host-detail.png)
+
+Per-host Docker containers with live stats:
+
+![Docker containers](docs/screenshots/docker-containers.png)
+
 ## Architecture
 
 ```
